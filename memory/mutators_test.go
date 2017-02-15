@@ -72,28 +72,54 @@ func TestSetDict(t *testing.T) {
 
 func TestUpdateString(t *testing.T) {
   t.Log("Testing Set method...")
+
+  t.FailNow()
 }
 
 func TestUpdateInt(t *testing.T) {
   t.Log("Testing Update method...")
+
+  t.FailNow()
 }
 
 func TestUpdateList(t *testing.T) {
   t.Log("Testing Update method...")
+
+  t.FailNow()
 }
 
 func TestUpdateDict(t *testing.T) {
   t.Log("Testing Update method...")
+
+  t.FailNow()
 }
 
 func TestRemove(t *testing.T) {
   t.Log("Testing Remove method...")
+
+  t.FailNow()
 }
 
 func TestRemoveFromList(t *testing.T) {
   t.Log("Testing Remove method...")
+
+  t.FailNow()
 }
 
 func TestRemoveFromDict(t *testing.T) {
   t.Log("Testing Remove method...")
+
+  t.FailNow()
+}
+
+func TestAppendToList(t *testing.T) {
+  t.Log("Testing Append method...")
+
+  t.FailNow()
+}
+
+func TestIncrement(t *testing.T) {
+  t.Log("Testing Increment method...")
+
+  t.FailNow()
 }

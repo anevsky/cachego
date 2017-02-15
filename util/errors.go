@@ -27,6 +27,9 @@ func (e LogError) Error() string {
 }
 
 var (
-  ErrorBadRequest = CacheError{"Bad Request ", 400}
+  ErrorWrongType = CacheError{"Wrong Type", 999}
+  ErrorIndexOutOfBounds = CacheError{"Index Out Of Bounds", 998}
+  ErrorBadRequest = CacheError{"Bad Request", 400}
   ErrorKeyNotFound = CacheError{"Key Not Found", 404}
+  ErrorDictKeyNotFound = CacheError{"Dictionary Key Not Found", 404}
 )

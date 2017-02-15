@@ -39,6 +39,18 @@ func TestGet(t *testing.T) {
   }
 }
 
+func TestGetListElement(t *testing.T) {
+  t.Log("Testing Get method...")
+
+  t.FailNow()
+}
+
+func TestGetDictElement(t *testing.T) {
+  t.Log("Testing Get method...")
+
+  t.FailNow()
+}
+
 func TestHasKey(t *testing.T) {
   t.Log("Testing HasKey method...")
 

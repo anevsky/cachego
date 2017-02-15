@@ -35,7 +35,7 @@ func main() {
   }
   fmt.Println(v)
 
-  b := memory.List{"one", "two"}
+  b := util.List{"one", "two"}
   cache.SetList("listTest", b)
   v, err = cache.Get("listTest")
   if err != nil {
@@ -43,7 +43,7 @@ func main() {
   }
   fmt.Println(v)
 
-  c := make(memory.Dict)
+  c := make(util.Dict)
   c["k1"] = "v1"
   c["k2"] = "v2"
   cache.SetDict("dictTest", c)
