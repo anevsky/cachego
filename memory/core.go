@@ -1,7 +1,11 @@
 package memory
 
 import (
+	"runtime"
 	"sync"
+	"time"
+
+	"github.com/anevsky/cachego/util"
 )
 
 // CACHE In-memory cache with synchronization
@@ -38,4 +42,41 @@ func (cache *CACHE) Keys() []string {
 	}
 
 	return result
+}
+
+func (cache *CACHE) Stats() util.Stats {
+	memStats := runtime.MemStats{}
+	runtime.ReadMemStats(&memStats)
+
+	stats := util.Stats{
+		MemoryAlloc:       memStats.Alloc,
+		MemoryTotalAlloc:  memStats.TotalAlloc,
+		MemoryHeapAlloc:   memStats.HeapAlloc,
+		MemoryHeapSys:     memStats.HeapSys,
+		MemoryHeapObjects: memStats.HeapObjects,
+		MemoryMallocs:     memStats.Mallocs,
+		MemoryFrees:       memStats.Frees,
+		GCPauseTotalNs:    memStats.PauseTotalNs,
+		NumGC:             memStats.NumGC,
+	}
+
+	return stats
+}
+
+func (cache *CACHE) SetTTL(key string, ttl int) error {
+	if ttl < 0 {
+		return util.ErrorInvalidTTLValue
+	}
+
+	if ttl == 0 {
+		return nil
+	}
+
+	time.AfterFunc(time.Millisecond*time.Duration(ttl), func() {
+		cache.Lock()
+		delete(cache.data, key)
+		cache.Unlock()
+	})
+
+	return nil
 }

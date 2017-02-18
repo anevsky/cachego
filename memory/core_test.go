@@ -1,7 +1,11 @@
 package memory
 
 import (
+	"encoding/json"
 	"testing"
+	"time"
+
+	"github.com/anevsky/cachego/util"
 )
 
 func TestAlloc(t *testing.T) {
@@ -65,5 +69,67 @@ func TestMutex(t *testing.T) {
 	_, err := cache.Get("intTest")
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestStats(t *testing.T) {
+	cache := Alloc()
+
+	cache.SetString("stringTest", "hi alex")
+	cache.SetInt("intTest", 123)
+
+	for i := 0; i < 30; i++ {
+		cache.Increment("intTest")
+	}
+
+	stats, err := json.Marshal(cache.Stats())
+	if err != nil {
+		t.Error(err)
+	}
+
+	m := make(map[string]int64)
+	err = json.Unmarshal(stats, &m)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if m["num_gc"] != 0 {
+		t.Errorf("Expected %s, but it was %d instead.", "0", m["num_gc"])
+	}
+}
+
+func TestSetTTL(t *testing.T) {
+	t.Log("Testing TTL method...")
+
+	cache := Alloc()
+
+	cache.SetInt("intTest", 123)
+	cache.SetTTL("intTest", 500)
+	time.Sleep(time.Millisecond*500 + time.Millisecond*20)
+	_, err := cache.Get("intTest")
+	if err != util.ErrorKeyNotFound {
+		t.Error("Expected ErrorKeyNotFound, but key found.")
+	}
+
+	cache.SetInt("intTest2", 123)
+	cache.SetTTL("intTest2", 100)
+	time.Sleep(time.Millisecond*100 + time.Millisecond*20)
+	_, err = cache.Get("intTest2")
+	if err != util.ErrorKeyNotFound {
+		t.Error("Expected ErrorKeyNotFound, but key found.")
+	}
+
+	cache.SetInt("intTest3", 123)
+	cache.SetTTL("intTest3", 100)
+	time.Sleep(time.Millisecond * 50)
+	_, err = cache.Get("intTest3")
+	if err != nil {
+		t.Errorf("Expected nil error, but it was %v instead.", err)
+	}
+
+	time.Sleep(time.Millisecond*50 + time.Millisecond*20)
+	_, err = cache.Get("intTest3")
+	if err != util.ErrorKeyNotFound {
+		t.Error("Expected ErrorKeyNotFound, but key found.")
 	}
 }
