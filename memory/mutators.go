@@ -1,154 +1,193 @@
 package memory
 
 import (
-  "github.com/anevsky/cachego/util"
+	"github.com/anevsky/cachego/util"
 )
 
 func (cache *CACHE) SetString(key, value string) error {
-  cache.data[key] = value
+	cache.Lock()
+	defer cache.Unlock()
 
-  return nil
+	cache.data[key] = value
+
+	return nil
 }
 
 func (cache *CACHE) SetInt(key string, value int) error {
-  cache.data[key] = value
+	cache.Lock()
+	defer cache.Unlock()
 
-  return nil
+	cache.data[key] = value
+
+	return nil
 }
 
 func (cache *CACHE) SetList(key string, value util.List) error {
-  cache.data[key] = value
+	cache.Lock()
+	defer cache.Unlock()
 
-  return nil
+	cache.data[key] = value
+
+	return nil
 }
 
 func (cache *CACHE) SetDict(key string, value util.Dict) error {
-  cache.data[key] = value
+	cache.Lock()
+	defer cache.Unlock()
 
-  return nil
+	cache.data[key] = value
+
+	return nil
 }
 
 func (cache *CACHE) UpdateString(key, value string) (string, error) {
-  oldValue, success := cache.data[key]
+	cache.Lock()
+	defer cache.Unlock()
 
-  if !success {
-    return "", util.ErrorKeyNotFound
-  }
+	oldValue, success := cache.data[key]
 
-  cache.data[key] = value
+	if !success {
+		return "", util.ErrorKeyNotFound
+	}
 
-  return oldValue.(string), nil
+	cache.data[key] = value
+
+	return oldValue.(string), nil
 }
 
 func (cache *CACHE) UpdateInt(key string, value int) (int, error) {
-  oldValue, success := cache.data[key]
+	cache.Lock()
+	defer cache.Unlock()
 
-  if !success {
-    return -1, util.ErrorKeyNotFound
-  }
+	oldValue, success := cache.data[key]
 
-  cache.data[key] = value
+	if !success {
+		return -1, util.ErrorKeyNotFound
+	}
 
-  return oldValue.(int), nil
+	cache.data[key] = value
+
+	return oldValue.(int), nil
 }
 
 func (cache *CACHE) UpdateList(key string, value util.List) (util.List, error) {
-  oldValue, success := cache.data[key]
+	cache.Lock()
+	defer cache.Unlock()
 
-  if !success {
-    return nil, util.ErrorKeyNotFound
-  }
+	oldValue, success := cache.data[key]
 
-  cache.data[key] = value
+	if !success {
+		return nil, util.ErrorKeyNotFound
+	}
 
-  return oldValue.(util.List), nil
+	cache.data[key] = value
+
+	return oldValue.(util.List), nil
 }
 
 func (cache *CACHE) UpdateDict(key string, value util.Dict) (util.Dict, error) {
-  oldValue, success := cache.data[key]
+	cache.Lock()
+	defer cache.Unlock()
 
-  if !success {
-    return nil, util.ErrorKeyNotFound
-  }
+	oldValue, success := cache.data[key]
 
-  cache.data[key] = value
+	if !success {
+		return nil, util.ErrorKeyNotFound
+	}
 
-  return oldValue.(util.Dict), nil
+	cache.data[key] = value
+
+	return oldValue.(util.Dict), nil
 }
 
 func (cache *CACHE) Remove(key string) error {
-  delete(cache.data, key)
+	cache.Lock()
+	defer cache.Unlock()
 
-  return nil
+	delete(cache.data, key)
+
+	return nil
 }
 
 func (cache *CACHE) RemoveFromList(key string, value string) (int, error) {
-  list, success := cache.data[key]
-  if !success {
-    return 0, util.ErrorKeyNotFound
-  }
+	cache.Lock()
+	defer cache.Unlock()
 
-  l, success := list.(util.List)
-  if !success {
-    return 0, util.ErrorWrongType
-  }
+	list, success := cache.data[key]
+	if !success {
+		return 0, util.ErrorKeyNotFound
+	}
 
-  index := util.SentinelLinearSearch(l, value)
-  if index != -1 {
-    l = append(l[:index], l[index+1:]...)
-  }
+	l, success := list.(util.List)
+	if !success {
+		return 0, util.ErrorWrongType
+	}
 
-  cache.data[key] = l
+	index := util.SentinelLinearSearch(l, value)
+	if index != -1 {
+		l = append(l[:index], l[index+1:]...)
+	}
 
-  return index, nil
+	cache.data[key] = l
+
+	return index, nil
 }
 
 func (cache *CACHE) RemoveFromDict(key string, value string) error {
-  dict, success := cache.data[key]
-  if !success {
-    return util.ErrorKeyNotFound
-  }
+	cache.Lock()
+	defer cache.Unlock()
 
-  d, success := dict.(util.Dict)
-  if !success {
-    return util.ErrorWrongType
-  }
+	dict, success := cache.data[key]
+	if !success {
+		return util.ErrorKeyNotFound
+	}
 
-  delete(d, value)
+	d, success := dict.(util.Dict)
+	if !success {
+		return util.ErrorWrongType
+	}
 
-  return nil
+	delete(d, value)
+
+	return nil
 }
 
 func (cache *CACHE) AppendToList(key, value string) error {
-  list, success := cache.data[key]
-  if !success {
-    return util.ErrorKeyNotFound
-  }
+	cache.Lock()
+	defer cache.Unlock()
 
-  l, success := list.(util.List)
-  if !success {
-    return util.ErrorWrongType
-  }
+	list, success := cache.data[key]
+	if !success {
+		return util.ErrorKeyNotFound
+	}
 
-  newList := append(l, value)
+	l, success := list.(util.List)
+	if !success {
+		return util.ErrorWrongType
+	}
 
-  cache.data[key] = newList
+	newList := append(l, value)
 
-  return nil
+	cache.data[key] = newList
+
+	return nil
 }
 
 func (cache *CACHE) Increment(key string) error {
-  value, success := cache.data[key]
-  if !success {
-    return util.ErrorKeyNotFound
-  }
+	cache.Lock()
+	defer cache.Unlock()
 
-  v, success := value.(int)
-  if !success {
-    return util.ErrorWrongType
-  }
+	value, success := cache.data[key]
+	if !success {
+		return util.ErrorKeyNotFound
+	}
 
-  cache.data[key] = v + 1
+	v, success := value.(int)
+	if !success {
+		return util.ErrorWrongType
+	}
 
-  return nil
+	cache.data[key] = v + 1
+
+	return nil
 }
