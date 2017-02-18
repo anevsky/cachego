@@ -39,7 +39,7 @@ func (cache *CACHE) GetListElement(key string, index int) (interface{}, error) {
     return "", util.ErrorWrongType
   }
 
-  if index >= len(v) {
+  if index <= len(v) {
     return v[index], nil
   } else {
     return "", util.ErrorIndexOutOfBounds

@@ -28,44 +28,52 @@ func (cache *CACHE) SetDict(key string, value util.Dict) error {
   return nil
 }
 
-func (cache *CACHE) UpdateString(key, value string) error {
-  if _, success := cache.data[key]; !success {
-    return util.ErrorKeyNotFound
+func (cache *CACHE) UpdateString(key, value string) (string, error) {
+  oldValue, success := cache.data[key]
+
+  if !success {
+    return "", util.ErrorKeyNotFound
   }
 
   cache.data[key] = value
 
-  return nil
+  return oldValue.(string), nil
 }
 
-func (cache *CACHE) UpdateInt(key string, value int) error {
-  if _, success := cache.data[key]; !success {
-    return util.ErrorKeyNotFound
+func (cache *CACHE) UpdateInt(key string, value int) (int, error) {
+  oldValue, success := cache.data[key]
+
+  if !success {
+    return -1, util.ErrorKeyNotFound
   }
 
   cache.data[key] = value
 
-  return nil
+  return oldValue.(int), nil
 }
 
-func (cache *CACHE) UpdateList(key string, value util.List) error {
-  if _, success := cache.data[key]; !success {
-    return util.ErrorKeyNotFound
+func (cache *CACHE) UpdateList(key string, value util.List) (util.List, error) {
+  oldValue, success := cache.data[key]
+
+  if !success {
+    return nil, util.ErrorKeyNotFound
   }
 
   cache.data[key] = value
 
-  return nil
+  return oldValue.(util.List), nil
 }
 
-func (cache *CACHE) UpdateDict(key string, value util.Dict) error {
-  if _, success := cache.data[key]; !success {
-    return util.ErrorKeyNotFound
+func (cache *CACHE) UpdateDict(key string, value util.Dict) (util.Dict, error) {
+  oldValue, success := cache.data[key]
+
+  if !success {
+    return nil, util.ErrorKeyNotFound
   }
 
   cache.data[key] = value
 
-  return nil
+  return oldValue.(util.Dict), nil
 }
 
 func (cache *CACHE) Remove(key string) error {
@@ -74,15 +82,15 @@ func (cache *CACHE) Remove(key string) error {
   return nil
 }
 
-func (cache *CACHE) RemoveFromList(key string, value string) error {
+func (cache *CACHE) RemoveFromList(key string, value string) (int, error) {
   list, success := cache.data[key]
   if !success {
-    return util.ErrorKeyNotFound
+    return 0, util.ErrorKeyNotFound
   }
 
   l, success := list.(util.List)
   if !success {
-    return util.ErrorWrongType
+    return 0, util.ErrorWrongType
   }
 
   index := util.SentinelLinearSearch(l, value)
@@ -90,7 +98,9 @@ func (cache *CACHE) RemoveFromList(key string, value string) error {
     l = append(l[:index], l[index+1:]...)
   }
 
-  return nil
+  cache.data[key] = l
+
+  return index, nil
 }
 
 func (cache *CACHE) RemoveFromDict(key string, value string) error {

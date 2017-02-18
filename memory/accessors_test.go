@@ -42,13 +42,37 @@ func TestGet(t *testing.T) {
 func TestGetListElement(t *testing.T) {
   t.Log("Testing Get method...")
 
-  t.FailNow()
+  cache := Alloc()
+
+  b := util.List{"one", "two"}
+  cache.SetList("listTest", b)
+
+  v, err := cache.GetListElement("listTest", 1)
+  if err != nil {
+    t.Error(err)
+  }
+  if v != "two" {
+    t.Errorf("Expected %s, but it was %s instead.", "two", v)
+  }
 }
 
 func TestGetDictElement(t *testing.T) {
   t.Log("Testing Get method...")
 
-  t.FailNow()
+  cache := Alloc()
+
+  c := make(util.Dict)
+  c["k1"] = "v1"
+  c["k2"] = "v2"
+  cache.SetDict("dictTest", c)
+
+  v, err := cache.GetDictElement("dictTest", "k2")
+  if err != nil {
+    t.Error(err)
+  }
+  if v != "v2" {
+    t.Errorf("Expected %s, but it was %s instead.", "v2", v)
+  }
 }
 
 func TestHasKey(t *testing.T) {
