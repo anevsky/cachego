@@ -45,14 +45,14 @@ func (cache *CACHE) GetListElement(key string, index int) (interface{}, error) {
 		return "", util.ErrorWrongType
 	}
 
-	if index <= len(v) {
+	if index <= len(v)-1 {
 		return v[index], nil
 	} else {
 		return "", util.ErrorIndexOutOfBounds
 	}
 }
 
-func (cache *CACHE) GetDictElement(key string, dKey string) (interface{}, error) {
+func (cache *CACHE) GetDictElement(key string, element string) (interface{}, error) {
 	cache.RLock()
 	defer cache.RUnlock()
 
@@ -66,7 +66,7 @@ func (cache *CACHE) GetDictElement(key string, dKey string) (interface{}, error)
 		return "", util.ErrorWrongType
 	}
 
-	e, success := v[dKey]
+	e, success := v[element]
 	if !success {
 		return "", util.ErrorDictKeyNotFound
 	}
