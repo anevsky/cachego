@@ -173,21 +173,21 @@ func (cache *CACHE) AppendToList(key, value string) error {
 	return nil
 }
 
-func (cache *CACHE) Increment(key string) error {
+func (cache *CACHE) Increment(key string) (int, error) {
 	cache.Lock()
 	defer cache.Unlock()
 
 	value, success := cache.data[key]
 	if !success {
-		return util.ErrorKeyNotFound
+		return 0, util.ErrorKeyNotFound
 	}
 
 	v, success := value.(int)
 	if !success {
-		return util.ErrorWrongType
+		return 0, util.ErrorWrongType
 	}
 
 	cache.data[key] = v + 1
 
-	return nil
+	return v + 1, nil
 }

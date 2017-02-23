@@ -52,7 +52,7 @@ func (cache *CACHE) GetListElement(key string, index int) (interface{}, error) {
 	}
 }
 
-func (cache *CACHE) GetDictElement(key string, element string) (interface{}, error) {
+func (cache *CACHE) GetDictElement(key string, elementKey string) (interface{}, error) {
 	cache.RLock()
 	defer cache.RUnlock()
 
@@ -66,7 +66,7 @@ func (cache *CACHE) GetDictElement(key string, element string) (interface{}, err
 		return "", util.ErrorWrongType
 	}
 
-	e, success := v[element]
+	e, success := v[elementKey]
 	if !success {
 		return "", util.ErrorDictKeyNotFound
 	}

@@ -43,3 +43,18 @@ type ResponseInt struct {
 	ResponseBasic
 	Value int `json:"value"`
 }
+
+type ResponseList struct {
+	ResponseBasic
+	Value List `json:"value"`
+}
+
+type ResponseDict struct {
+	ResponseBasic
+	Value Dict `json:"value"`
+}
+
+type ResponseBool struct {
+	ResponseBasic
+	Value bool `json:"value"`
+}
