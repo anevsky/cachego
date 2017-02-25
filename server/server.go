@@ -26,7 +26,7 @@ func Create() SERVER {
 func (server *SERVER) StartUp() {
 	// Setup
 	e := echo.New()
-	e.Server.Addr = ":1323"
+	e.Server.Addr = ":8027"
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -129,7 +129,7 @@ func (server *SERVER) get(c echo.Context) error {
 		return makeJSONError(c, util.ErrorWrongType)
 	}
 
-	return c.JSON(http.StatusNotImplemented, "n/a")
+	return c.JSON(http.StatusBadRequest, "n/a")
 }
 
 /*
