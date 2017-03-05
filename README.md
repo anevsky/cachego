@@ -55,27 +55,47 @@ server.StartUp()
 ## cURL examples to server
 
 * Get total number of objects 
-* * `curl -i -w "\n" --user alex:secret localhost:8027/v1/len`
-* Get list of keys `curl -i -w "\n" --user alex:secret localhost:8027/v1/keys`
-* Get cache stats `curl -i -w "\n" --user alex:secret localhost:8027/v1/stats`
-* Get value from cache by key `curl -i -w "\n" --user alex:secret localhost:8027/v1/get/vvv`
-* Get element from list by index `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":1}' localhost:8027/v1/list/element/lll`
-* Get element from dict by key `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k1"}' localhost:8027/v1/dict/element/ddd`
-* Check if object exists in cache by key `curl -i -w "\n" --user alex:secret localhost:8027/v1/key/lll`
-* Set string `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"s1"}' localhost:8027/v1/string/sss`
-* Set int `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":121}' localhost:8027/v1/int/iii`
-* Set list `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":["aa", "bb"]}' localhost:8027/v1/list/lll`
-* Set dict `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":{"k1": "v1", "k2": "v2"}}' localhost:8027/v1/dict/ddd`
-* Update string by key `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":"s2"}' localhost:8027/v1/string/sss`
-* Update int by key `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":123}' localhost:8027/v1/int/iii`
-* Update list by key `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":["aa2", "bb2"]}' localhost:8027/v1/list/lll`
-* Update dict by key `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":{"k12": "v12", "k22": "v22"}}' localhost:8027/v1/dict/ddd`
-* Append to list a string element `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":"aa3"}' localhost:8027/v1/list/element/lll`
-* Increment an integer value by key `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json'  localhost:8027/v1/int/increment/iii`
-* Remove object from cache by key `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json'  localhost:8027/v1/remove/iii`
-* Remove object from list by value `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"aa3"}' localhost:8027/v1/list/element/lll`
-* Remove object from dict by key `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k12"}' localhost:8027/v1/dict/element/ddd`
-* Set TTL (time-to-live) in nanoseconds for object by key `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":5211}' localhost:8027/v1/ttl/iii`
+* `curl -i -w "\n" --user alex:secret localhost:8027/v1/len`
+* Get list of keys 
+* `curl -i -w "\n" --user alex:secret localhost:8027/v1/keys`
+* Get cache stats 
+* `curl -i -w "\n" --user alex:secret localhost:8027/v1/stats`
+* Get value from cache by key 
+* `curl -i -w "\n" --user alex:secret localhost:8027/v1/get/vvv`
+* Get element from list by index 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":1}' localhost:8027/v1/list/element/lll`
+* Get element from dict by key 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k1"}' localhost:8027/v1/dict/element/ddd`
+* Check if object exists in cache by key 
+* `curl -i -w "\n" --user alex:secret localhost:8027/v1/key/lll`
+* Set string 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"s1"}' localhost:8027/v1/string/sss`
+* Set int 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":121}' localhost:8027/v1/int/iii`
+* Set list 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":["aa", "bb"]}' localhost:8027/v1/list/lll`
+* Set dict 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":{"k1": "v1", "k2": "v2"}}' localhost:8027/v1/dict/ddd`
+* Update string by key 
+* `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":"s2"}' localhost:8027/v1/string/sss`
+* Update int by key 
+* `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":123}' localhost:8027/v1/int/iii`
+* Update list by key 
+* `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":["aa2", "bb2"]}' localhost:8027/v1/list/lll`
+* Update dict by key 
+* `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":{"k12": "v12", "k22": "v22"}}' localhost:8027/v1/dict/ddd`
+* Append to list a string element 
+* `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":"aa3"}' localhost:8027/v1/list/element/lll`
+* Increment an integer value by key 
+* `curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json'  localhost:8027/v1/int/increment/iii`
+* Remove object from cache by key 
+* `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json'  localhost:8027/v1/remove/iii`
+* Remove object from list by value 
+* `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"aa3"}' localhost:8027/v1/list/element/lll`
+* Remove object from dict by key 
+* `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k12"}' localhost:8027/v1/dict/element/ddd`
+* Set TTL (time-to-live) in nanoseconds for object by key 
+* `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":5211}' localhost:8027/v1/ttl/iii`
 
 ## Client example
 
