@@ -1,6 +1,9 @@
 package client
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/anevsky/cachego/util"
 	"github.com/parnurzeal/gorequest"
 )
@@ -43,6 +46,11 @@ func (cli *CLIENT) Len() (result int, errs []error) {
 		return 0, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return 0, []error{err}
+	}
+
 	return dto.Length, errs
 }
 
@@ -58,6 +66,11 @@ func (cli *CLIENT) Keys() (result []string, errs []error) {
 
 	if resp == nil || body == nil {
 		return nil, []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return nil, []error{err}
 	}
 
 	return dto.Keys, errs
@@ -77,6 +90,11 @@ func (cli *CLIENT) Stats() (result util.Stats, errs []error) {
 		return util.Stats{}, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return util.Stats{}, []error{err}
+	}
+
 	return dto.Stats, errs
 }
 
@@ -92,6 +110,11 @@ func (cli *CLIENT) GetString(key string) (result string, errs []error) {
 
 	if resp == nil || body == nil {
 		return "", []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return "", []error{err}
 	}
 
 	return dto.Value, errs
@@ -111,13 +134,18 @@ func (cli *CLIENT) GetInt(key string) (result int, errs []error) {
 		return -1, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
+	}
+
 	return dto.Value, errs
 }
 
 func (cli *CLIENT) GetListElement(key string, v int) (result string, errs []error) {
 	var dto util.StringDTO
 	resp, body, errs := cli.agent.
-		Get(cli.Url + cli.APIUrl + "/list/element/" + key).
+		Post(cli.Url + cli.APIUrl + "/list/element/" + key).
 		Send(util.IntDTO{Value: v}).
 		EndStruct(&dto)
 
@@ -129,13 +157,18 @@ func (cli *CLIENT) GetListElement(key string, v int) (result string, errs []erro
 		return "", []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return "", []error{err}
+	}
+
 	return dto.Value, errs
 }
 
 func (cli *CLIENT) GetDictElement(key, v string) (result string, errs []error) {
 	var dto util.StringDTO
 	resp, body, errs := cli.agent.
-		Get(cli.Url + cli.APIUrl + "/dict/element/" + key).
+		Post(cli.Url + cli.APIUrl + "/dict/element/" + key).
 		Send(util.StringDTO{Value: v}).
 		EndStruct(&dto)
 
@@ -145,6 +178,11 @@ func (cli *CLIENT) GetDictElement(key, v string) (result string, errs []error) {
 
 	if resp == nil || body == nil {
 		return "", []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return "", []error{err}
 	}
 
 	return dto.Value, errs
@@ -164,6 +202,11 @@ func (cli *CLIENT) HasKey(key string) (result bool, errs []error) {
 		return false, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return false, []error{err}
+	}
+
 	return dto.Value, errs
 }
 
@@ -180,6 +223,11 @@ func (cli *CLIENT) SetString(key, v string) (errs []error) {
 
 	if resp == nil || body == nil {
 		return []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return []error{err}
 	}
 
 	return errs
@@ -202,6 +250,11 @@ func (cli *CLIENT) SetInt(key string, v int) (errs []error) {
 		return []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return []error{err}
+	}
+
 	return errs
 }
 
@@ -218,6 +271,11 @@ func (cli *CLIENT) SetList(key string, v util.List) (errs []error) {
 
 	if resp == nil || body == nil {
 		return []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return []error{err}
 	}
 
 	return errs
@@ -238,6 +296,11 @@ func (cli *CLIENT) SetDict(key string, v util.Dict) (errs []error) {
 		return []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return []error{err}
+	}
+
 	return errs
 }
 
@@ -254,6 +317,11 @@ func (cli *CLIENT) UpdateString(key, v string) (result string, errs []error) {
 
 	if resp == nil || body == nil {
 		return "", []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return "", []error{err}
 	}
 
 	return dto.Value, errs
@@ -274,6 +342,11 @@ func (cli *CLIENT) UpdateInt(key string, v int) (result int, errs []error) {
 		return -1, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
+	}
+
 	return dto.Value, errs
 }
 
@@ -290,6 +363,11 @@ func (cli *CLIENT) UpdateList(key string, v util.List) (result util.List, errs [
 
 	if resp == nil || body == nil {
 		return nil, []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return nil, []error{err}
 	}
 
 	return dto.Value, errs
@@ -310,6 +388,11 @@ func (cli *CLIENT) UpdateDict(key string, v util.Dict) (result util.Dict, errs [
 		return nil, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return nil, []error{err}
+	}
+
 	return dto.Value, errs
 }
 
@@ -326,6 +409,11 @@ func (cli *CLIENT) AppendToList(key, v string) (errs []error) {
 
 	if resp == nil || body == nil {
 		return []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return []error{err}
 	}
 
 	return errs
@@ -345,6 +433,11 @@ func (cli *CLIENT) Increment(key string) (result int, errs []error) {
 		return -1, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
+	}
+
 	return dto.Value, errs
 }
 
@@ -360,6 +453,11 @@ func (cli *CLIENT) Remove(key string) (result int, errs []error) {
 
 	if resp == nil || body == nil {
 		return -1, []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
 	}
 
 	return dto.ErrorCode, errs
@@ -380,6 +478,11 @@ func (cli *CLIENT) RemoveFromList(key, v string) (result int, errs []error) {
 		return -1, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
+	}
+
 	return dto.Value, errs
 }
 
@@ -396,6 +499,11 @@ func (cli *CLIENT) RemoveFromDict(key, v string) (result int, errs []error) {
 
 	if resp == nil || body == nil {
 		return -1, []error{util.ErrorResponseOrBodyNil}
+	}
+
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
 	}
 
 	return dto.ErrorCode, errs
@@ -416,5 +524,24 @@ func (cli *CLIENT) SetTTL(key string, v int) (result int, errs []error) {
 		return -1, []error{util.ErrorResponseOrBodyNil}
 	}
 
+	err := checkBasicError(body)
+	if err != nil {
+		return -1, []error{err}
+	}
+
 	return dto.ErrorCode, errs
+}
+
+func checkBasicError(body []byte) error {
+	var resultRaw util.BasicDTO
+	err := json.Unmarshal(body, &resultRaw)
+	if err != nil {
+		return err
+	}
+
+	if resultRaw.ErrorCode != 0 {
+		return fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return nil
 }

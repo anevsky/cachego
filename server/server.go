@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/anevsky/cachego/memory"
@@ -122,8 +121,8 @@ func (server *SERVER) stats(c echo.Context) error {
 // curl -i -w "\n" --user alex:secret localhost:8027/v1/get/vvv
 func (server *SERVER) get(c echo.Context) error {
 	key := c.Param("key")
-	value, err := server.cache.Get(key)
 
+	value, err := server.cache.Get(key)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
@@ -151,10 +150,6 @@ func (server *SERVER) getListElement(c echo.Context) error {
 	if err := c.Bind(value); err != nil {
 		return makeJSONError(c, err)
 	}
-
-	fmt.Printf("\n key: %v \n", key)
-	fmt.Printf("\n c: %v \n", c)
-	fmt.Printf("\n value: %v \n", value)
 
 	v, err := server.cache.GetListElement(key, value.Value)
 	if err != nil {
