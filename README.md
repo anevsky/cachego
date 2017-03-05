@@ -12,7 +12,7 @@
   - Update
   - Remove
   - Keys
-- Custom operations(Get i element on list, get value by key from dict, etc)
+- Custom operations (Get i element on list, get value by key from dict, etc)
 - Golang API client
 - Telnet-like/HTTP-like API protocol
 - Embed or client-server architecture
@@ -20,7 +20,7 @@
 ## Optional features
 - auth (Done)
 - persistence to disk/db (TODO)
-- scaling(on server-side or on client-side) (TODO)
+- scaling (on server-side or on client-side) (TODO)
 - perfomance tests (TODO)
 
 ## Run server
