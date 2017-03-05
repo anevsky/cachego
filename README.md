@@ -1,5 +1,5 @@
 ## cachego - Redis-like in-memory cache
-## with embed or client-server architecture
+with embed or client-server architecture
 
 [![GoDoc](https://godoc.org/github.com/anevsky/cachego?status.svg)](https://godoc.org/github.com/anevsky/cachego)
 [![Report Card](https://goreportcard.com/badge/github.com/anevsky/cachego)](https://goreportcard.com/report/github.com/anevsky/cachego)
