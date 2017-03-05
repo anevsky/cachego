@@ -14,47 +14,47 @@ type Stats struct {
 	NumGC             uint32 `json:"num_gc"`
 }
 
-type ResponseBasic struct {
+type BasicDTO struct {
 	ErrorCode    int    `json:"error_code"`
 	ErrorMessage string `json:"error_message,omitempty"`
 }
 
-type ResponseLen struct {
-	ResponseBasic
+type LenDTO struct {
+	BasicDTO
 	Length int `json:"length"`
 }
 
-type ResponseKeys struct {
-	ResponseBasic
+type KeysDTO struct {
+	BasicDTO
 	Keys []string `json:"keys"`
 }
 
-type ResponseStats struct {
-	ResponseBasic
+type StatsDTO struct {
+	BasicDTO
 	Stats
 }
 
-type ResponseString struct {
-	ResponseBasic
+type StringDTO struct {
+	BasicDTO
 	Value string `json:"value"`
 }
 
-type ResponseInt struct {
-	ResponseBasic
+type IntDTO struct {
+	BasicDTO
 	Value int `json:"value"`
 }
 
-type ResponseList struct {
-	ResponseBasic
+type ListDTO struct {
+	BasicDTO
 	Value List `json:"value"`
 }
 
-type ResponseDict struct {
-	ResponseBasic
+type DictDTO struct {
+	BasicDTO
 	Value Dict `json:"value"`
 }
 
-type ResponseBool struct {
-	ResponseBasic
+type BoolDTO struct {
+	BasicDTO
 	Value bool `json:"value"`
 }

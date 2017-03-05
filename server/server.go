@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/anevsky/cachego/memory"
 	"github.com/anevsky/cachego/util"
@@ -34,16 +33,17 @@ func (server *SERVER) StartUp() {
 
 	// Route => handler
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!\n")
+		return c.String(http.StatusOK, "Hello, Network!\n")
 	})
 
 	// Group level middleware
-	api := e.Group("/v1", middleware.BasicAuth(func(username, password string, c echo.Context) bool {
-		if username == "alex" && password == "juno" {
-			return true
-		}
-		return false
-	}))
+	api := e.Group("/v1", middleware.BasicAuth(
+		func(username, password string, c echo.Context) bool {
+			if username == "alex" && password == "secret" {
+				return true
+			}
+			return false
+		}))
 
 	// core
 	api.GET("/len", server.len)
@@ -85,7 +85,8 @@ func makeJSONError(c echo.Context, err error) error {
 		errorCode = util.ErrorBadRequest.Code
 	}
 
-	return c.JSON(http.StatusBadRequest, util.ResponseBasic{ErrorCode: errorCode, ErrorMessage: err.Error()})
+	return c.JSON(http.StatusBadRequest,
+		util.BasicDTO{ErrorCode: errorCode, ErrorMessage: err.Error()})
 }
 
 ///////////////////////////////////////
@@ -97,15 +98,15 @@ curl -i -w "\n" --user alex:juno localhost:1323/v1/len
 result: {"error_code":0,"length":0}
 */
 func (server *SERVER) len(c echo.Context) error {
-	return c.JSON(http.StatusOK, util.ResponseLen{Length: server.cache.Len()})
+	return c.JSON(http.StatusOK, util.LenDTO{Length: server.cache.Len()})
 }
 
 func (server *SERVER) keys(c echo.Context) error {
-	return c.JSON(http.StatusOK, util.ResponseKeys{Keys: server.cache.Keys()})
+	return c.JSON(http.StatusOK, util.KeysDTO{Keys: server.cache.Keys()})
 }
 
 func (server *SERVER) stats(c echo.Context) error {
-	return c.JSON(http.StatusOK, util.ResponseStats{Stats: server.cache.Stats()})
+	return c.JSON(http.StatusOK, util.StatsDTO{Stats: server.cache.Stats()})
 }
 
 func (server *SERVER) get(c echo.Context) error {
@@ -118,45 +119,48 @@ func (server *SERVER) get(c echo.Context) error {
 
 	switch v := value.(type) {
 	case int:
-		c.JSON(http.StatusOK, util.ResponseInt{Value: v})
+		return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 	case string:
-		c.JSON(http.StatusOK, util.ResponseString{Value: v})
+		return c.JSON(http.StatusOK, util.StringDTO{Value: v})
 	case util.List:
-		c.JSON(http.StatusOK, util.ResponseList{Value: v})
+		return c.JSON(http.StatusOK, util.ListDTO{Value: v})
 	case util.Dict:
-		c.JSON(http.StatusOK, util.ResponseDict{Value: v})
+		return c.JSON(http.StatusOK, util.DictDTO{Value: v})
 	default:
 		return makeJSONError(c, util.ErrorWrongType)
 	}
-
-	return c.JSON(http.StatusBadRequest, "n/a")
 }
 
-/*
-curl -i -w "\n" --user alex:juno localhost:1323/v1/list/element/testList?index=1
-*/
 func (server *SERVER) getListElement(c echo.Context) error {
 	key := c.Param("key")
-	index, _ := strconv.Atoi(c.QueryParam("index"))
 
-	v, err := server.cache.GetListElement(key, index)
+	value := new(util.IntDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	v, err := server.cache.GetListElement(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseString{Value: v.(string)})
+	return c.JSON(http.StatusOK, util.StringDTO{Value: v.(string)})
 }
 
 func (server *SERVER) getDictElement(c echo.Context) error {
 	key := c.Param("key")
-	elementKey := c.QueryParam("elementKey")
 
-	v, err := server.cache.GetDictElement(key, elementKey)
+	value := new(util.StringDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	v, err := server.cache.GetDictElement(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseString{Value: v.(string)})
+	return c.JSON(http.StatusOK, util.StringDTO{Value: v.(string)})
 }
 
 func (server *SERVER) hasKey(c echo.Context) error {
@@ -167,131 +171,151 @@ func (server *SERVER) hasKey(c echo.Context) error {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBool{Value: v})
+	return c.JSON(http.StatusOK, util.BoolDTO{Value: v})
 }
 
 func (server *SERVER) setString(c echo.Context) error {
 	key := c.Param("key")
-	value := c.QueryParam("value")
 
-	err := server.cache.SetString(key, value)
+	value := new(util.StringDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	err := server.cache.SetString(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) setInt(c echo.Context) error {
 	key := c.Param("key")
-	value, _ := strconv.Atoi(c.QueryParam("value"))
 
-	err := server.cache.SetInt(key, value)
+	value := new(util.IntDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	err := server.cache.SetInt(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) setList(c echo.Context) error {
 	key := c.Param("key")
 
-	value := util.List{}
-	if err := c.Bind(&value); err != nil {
+	value := new(util.ListDTO)
+	if err := c.Bind(value); err != nil {
 		return makeJSONError(c, err)
 	}
 
-	err := server.cache.SetList(key, value)
+	err := server.cache.SetList(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) setDict(c echo.Context) error {
 	key := c.Param("key")
 
-	value := util.Dict{}
-	if err := c.Bind(&value); err != nil {
+	value := new(util.DictDTO)
+	if err := c.Bind(value); err != nil {
 		return makeJSONError(c, err)
 	}
 
-	err := server.cache.SetDict(key, value)
+	err := server.cache.SetDict(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) updateString(c echo.Context) error {
 	key := c.Param("key")
-	value := c.QueryParam("value")
 
-	v, err := server.cache.UpdateString(key, value)
+	value := new(util.StringDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	v, err := server.cache.UpdateString(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseString{Value: v})
+	return c.JSON(http.StatusOK, util.StringDTO{Value: v})
 }
 
 func (server *SERVER) updateInt(c echo.Context) error {
 	key := c.Param("key")
-	value, _ := strconv.Atoi(c.QueryParam("value"))
 
-	v, err := server.cache.UpdateInt(key, value)
+	value := new(util.IntDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	v, err := server.cache.UpdateInt(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseInt{Value: v})
+	return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 }
 
 func (server *SERVER) updateList(c echo.Context) error {
 	key := c.Param("key")
 
-	value := util.List{}
-	if err := c.Bind(&value); err != nil {
+	value := new(util.ListDTO)
+	if err := c.Bind(value); err != nil {
 		return makeJSONError(c, err)
 	}
 
-	v, err := server.cache.UpdateList(key, value)
+	v, err := server.cache.UpdateList(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseList{Value: v})
+	return c.JSON(http.StatusOK, util.ListDTO{Value: v})
 }
 
 func (server *SERVER) updateDict(c echo.Context) error {
 	key := c.Param("key")
 
-	value := util.Dict{}
-	if err := c.Bind(&value); err != nil {
+	value := new(util.DictDTO)
+	if err := c.Bind(value); err != nil {
 		return makeJSONError(c, err)
 	}
 
-	v, err := server.cache.UpdateDict(key, value)
+	v, err := server.cache.UpdateDict(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseDict{Value: v})
+	return c.JSON(http.StatusOK, util.DictDTO{Value: v})
 }
 
 func (server *SERVER) appendToList(c echo.Context) error {
 	key := c.Param("key")
-	value := c.QueryParam("value")
 
-	err := server.cache.AppendToList(key, value)
+	value := new(util.StringDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	err := server.cache.AppendToList(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) increment(c echo.Context) error {
@@ -302,7 +326,7 @@ func (server *SERVER) increment(c echo.Context) error {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseInt{Value: v})
+	return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 }
 
 func (server *SERVER) remove(c echo.Context) error {
@@ -313,41 +337,53 @@ func (server *SERVER) remove(c echo.Context) error {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) removeFromList(c echo.Context) error {
 	key := c.Param("key")
-	value := c.QueryParam("value")
 
-	v, err := server.cache.RemoveFromList(key, value)
+	value := new(util.StringDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	v, err := server.cache.RemoveFromList(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseInt{Value: v})
+	return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 }
 
 func (server *SERVER) removeFromDict(c echo.Context) error {
 	key := c.Param("key")
-	value := c.QueryParam("value")
 
-	err := server.cache.RemoveFromDict(key, value)
+	value := new(util.StringDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	err := server.cache.RemoveFromDict(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
 func (server *SERVER) setTTL(c echo.Context) error {
 	key := c.Param("key")
-	v, _ := strconv.Atoi(c.QueryParam("value"))
 
-	err := server.cache.SetTTL(key, v)
+	value := new(util.IntDTO)
+	if err := c.Bind(value); err != nil {
+		return makeJSONError(c, err)
+	}
+
+	err := server.cache.SetTTL(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.ResponseBasic{})
+	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
