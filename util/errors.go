@@ -27,11 +27,11 @@ func (e LogError) Error() string {
 }
 
 var (
-	ErrorWrongType         = CacheError{"Wrong Type", 999}
-	ErrorIndexOutOfBounds  = CacheError{"Index Out Of Bounds", 998}
-	ErrorInvalidTTLValue   = CacheError{"Invalid TTL Value", 997}
-	ErrorResponseOrBodyNil = CacheError{"Response Or Body Nil", 996}
-	ErrorBadRequest        = CacheError{"Bad Request", 400}
-	ErrorKeyNotFound       = CacheError{"Key Not Found", 404}
-	ErrorDictKeyNotFound   = CacheError{"Dictionary Key Not Found", 404}
+	ErrorWrongType         = CacheError{"Wrong type", 999}
+	ErrorIndexOutOfBounds  = CacheError{"Index out of Bounds", 998}
+	ErrorInvalidTTLValue   = CacheError{"Invalid ttl value", 997}
+	ErrorResponseOrBodyNil = CacheError{"Response or body nil", 996}
+	ErrorBadRequest        = CacheError{"Bad request", 400}
+	ErrorKeyNotFound       = CacheError{"Key not found", 404}
+	ErrorDictKeyNotFound   = CacheError{"Key not found in dictionary", 404}
 )

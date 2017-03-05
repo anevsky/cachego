@@ -114,10 +114,11 @@ func (cli *CLIENT) GetInt(key string) (result int, errs []error) {
 	return dto.Value, errs
 }
 
-func (cli *CLIENT) GetListElement(key string) (result string, errs []error) {
+func (cli *CLIENT) GetListElement(key string, v int) (result string, errs []error) {
 	var dto util.StringDTO
 	resp, body, errs := cli.agent.
 		Get(cli.Url + cli.APIUrl + "/list/element/" + key).
+		Send(util.IntDTO{Value: v}).
 		EndStruct(&dto)
 
 	if errs != nil {
@@ -131,10 +132,11 @@ func (cli *CLIENT) GetListElement(key string) (result string, errs []error) {
 	return dto.Value, errs
 }
 
-func (cli *CLIENT) GetDictElement(key string) (result string, errs []error) {
+func (cli *CLIENT) GetDictElement(key, v string) (result string, errs []error) {
 	var dto util.StringDTO
 	resp, body, errs := cli.agent.
 		Get(cli.Url + cli.APIUrl + "/dict/element/" + key).
+		Send(util.StringDTO{Value: v}).
 		EndStruct(&dto)
 
 	if errs != nil {

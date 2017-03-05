@@ -27,7 +27,7 @@ func (cache *CACHE) Get(key string) (interface{}, error) {
 	}
 }
 
-func (cache *CACHE) GetListElement(key string, index int) (interface{}, error) {
+func (cache *CACHE) GetListElement(key string, index int) (string, error) {
 	cache.RLock()
 	defer cache.RUnlock()
 
@@ -52,7 +52,7 @@ func (cache *CACHE) GetListElement(key string, index int) (interface{}, error) {
 	}
 }
 
-func (cache *CACHE) GetDictElement(key string, elementKey string) (interface{}, error) {
+func (cache *CACHE) GetDictElement(key string, elementKey string) (string, error) {
 	cache.RLock()
 	defer cache.RUnlock()
 

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/anevsky/cachego/memory"
@@ -10,10 +11,12 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
+// Server with cache
 type SERVER struct {
 	cache memory.CACHE
 }
 
+// Allocate server instance
 func Create() SERVER {
 	server := SERVER{
 		cache: memory.Alloc(),
@@ -22,6 +25,7 @@ func Create() SERVER {
 	return server
 }
 
+// Setup and start a server
 func (server *SERVER) StartUp() {
 	// Setup
 	e := echo.New()
@@ -51,9 +55,9 @@ func (server *SERVER) StartUp() {
 	api.GET("/stats", server.stats)
 	// accessors - read
 	api.GET("/get/:key", server.get)
-	api.GET("/list/element/:key", server.getListElement)
-	api.GET("/dict/element/:key", server.getDictElement)
 	api.GET("/key/:key", server.hasKey)
+	api.POST("/list/element/:key", server.getListElement)
+	api.POST("/dict/element/:key", server.getDictElement)
 	// mutators - create
 	api.POST("/string/:key", server.setString)
 	api.POST("/int/:key", server.setInt)
@@ -70,12 +74,13 @@ func (server *SERVER) StartUp() {
 	// mutators - delete
 	api.DELETE("/remove/:key", server.remove)
 	api.DELETE("/list/element/:key", server.removeFromList)
-	api.DELETE("/dict/element:key", server.removeFromDict)
+	api.DELETE("/dict/element/:key", server.removeFromDict)
 
 	// Serve it like a boss
 	e.Logger.Fatal(gracehttp.Serve(e.Server))
 }
 
+// Tramsform error object to JSON response
 func makeJSONError(c echo.Context, err error) error {
 	var errorCode int
 	switch err := err.(type) {
@@ -93,22 +98,28 @@ func makeJSONError(c echo.Context, err error) error {
 // Handlers
 ///////////////////////////////////////
 
-/*
-curl -i -w "\n" --user alex:juno localhost:1323/v1/len
-result: {"error_code":0,"length":0}
-*/
+// Get total number of objects
+// curl -i -w "\n" --user alex:secret localhost:8027/v1/len
 func (server *SERVER) len(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.LenDTO{Length: server.cache.Len()})
 }
 
+// Get list of keys
+// curl -i -w "\n" --user alex:secret localhost:8027/v1/keys
 func (server *SERVER) keys(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.KeysDTO{Keys: server.cache.Keys()})
 }
 
+// Get cache stats
+// curl -i -w "\n" --user alex:secret localhost:8027/v1/stats
 func (server *SERVER) stats(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.StatsDTO{Stats: server.cache.Stats()})
 }
 
+// Get value from cache by 'key' param
+// Auto type conversion
+// Returns value or ErrorWrongType if not supported value type
+// curl -i -w "\n" --user alex:secret localhost:8027/v1/get/vvv
 func (server *SERVER) get(c echo.Context) error {
 	key := c.Param("key")
 	value, err := server.cache.Get(key)
@@ -131,6 +142,8 @@ func (server *SERVER) get(c echo.Context) error {
 	}
 }
 
+// Get element from list by index
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":1}' localhost:8027/v1/list/element/lll
 func (server *SERVER) getListElement(c echo.Context) error {
 	key := c.Param("key")
 
@@ -139,14 +152,20 @@ func (server *SERVER) getListElement(c echo.Context) error {
 		return makeJSONError(c, err)
 	}
 
+	fmt.Printf("\n key: %v \n", key)
+	fmt.Printf("\n c: %v \n", c)
+	fmt.Printf("\n value: %v \n", value)
+
 	v, err := server.cache.GetListElement(key, value.Value)
 	if err != nil {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.StringDTO{Value: v.(string)})
+	return c.JSON(http.StatusOK, util.StringDTO{Value: v})
 }
 
+// Get element from dict by key
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k1"}' localhost:8027/v1/dict/element/ddd
 func (server *SERVER) getDictElement(c echo.Context) error {
 	key := c.Param("key")
 
@@ -160,9 +179,11 @@ func (server *SERVER) getDictElement(c echo.Context) error {
 		return makeJSONError(c, err)
 	}
 
-	return c.JSON(http.StatusOK, util.StringDTO{Value: v.(string)})
+	return c.JSON(http.StatusOK, util.StringDTO{Value: v})
 }
 
+// Check if object exists in cache by key
+// curl -i -w "\n" --user alex:secret localhost:8027/v1/key/lll
 func (server *SERVER) hasKey(c echo.Context) error {
 	key := c.Param("key")
 
@@ -174,6 +195,8 @@ func (server *SERVER) hasKey(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BoolDTO{Value: v})
 }
 
+// Set string
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"s1"}' localhost:8027/v1/string/sss
 func (server *SERVER) setString(c echo.Context) error {
 	key := c.Param("key")
 
@@ -190,6 +213,8 @@ func (server *SERVER) setString(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Set int
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":121}' localhost:8027/v1/int/iii
 func (server *SERVER) setInt(c echo.Context) error {
 	key := c.Param("key")
 
@@ -206,6 +231,8 @@ func (server *SERVER) setInt(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Set list
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":["aa", "bb"]}' localhost:8027/v1/list/lll
 func (server *SERVER) setList(c echo.Context) error {
 	key := c.Param("key")
 
@@ -222,6 +249,8 @@ func (server *SERVER) setList(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Set dict
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":{"k1": "v1", "k2": "v2"}}' localhost:8027/v1/dict/ddd
 func (server *SERVER) setDict(c echo.Context) error {
 	key := c.Param("key")
 
@@ -238,6 +267,9 @@ func (server *SERVER) setDict(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Update string by key
+// Returns old value or ErrorKeyNotFound
+// curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":"s2"}' localhost:8027/v1/string/sss
 func (server *SERVER) updateString(c echo.Context) error {
 	key := c.Param("key")
 
@@ -254,6 +286,9 @@ func (server *SERVER) updateString(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.StringDTO{Value: v})
 }
 
+// Update int by key
+// Returns old value or ErrorKeyNotFound
+// curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":123}' localhost:8027/v1/int/iii
 func (server *SERVER) updateInt(c echo.Context) error {
 	key := c.Param("key")
 
@@ -270,6 +305,9 @@ func (server *SERVER) updateInt(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 }
 
+// Update list by key
+// Returns old value or ErrorKeyNotFound
+// curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":["aa2", "bb2"]}' localhost:8027/v1/list/lll
 func (server *SERVER) updateList(c echo.Context) error {
 	key := c.Param("key")
 
@@ -286,6 +324,9 @@ func (server *SERVER) updateList(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.ListDTO{Value: v})
 }
 
+// Update dict by key
+// Returns old value or ErrorKeyNotFound
+// curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":{"k12": "v12", "k22": "v22"}}' localhost:8027/v1/dict/ddd
 func (server *SERVER) updateDict(c echo.Context) error {
 	key := c.Param("key")
 
@@ -302,6 +343,9 @@ func (server *SERVER) updateDict(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.DictDTO{Value: v})
 }
 
+// Append to list a string element
+// Might return ErrorKeyNotFound or ErrorWrongType
+// curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json' -d '{"value":"aa3"}' localhost:8027/v1/list/element/lll
 func (server *SERVER) appendToList(c echo.Context) error {
 	key := c.Param("key")
 
@@ -318,6 +362,9 @@ func (server *SERVER) appendToList(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Increment an integer value by key
+// Returns new value
+// curl -i -w "\n" -X PUT --user alex:secret -H 'Content-Type: application/json'  localhost:8027/v1/int/increment/iii
 func (server *SERVER) increment(c echo.Context) error {
 	key := c.Param("key")
 
@@ -329,6 +376,8 @@ func (server *SERVER) increment(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 }
 
+// Remove object from cache by key
+// curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json'  localhost:8027/v1/remove/iii
 func (server *SERVER) remove(c echo.Context) error {
 	key := c.Param("key")
 
@@ -340,6 +389,10 @@ func (server *SERVER) remove(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Remove object from list by value
+// Returns the index of removed element or -1 if value not found in list
+// Might return ErrorKeyNotFound, ErrorWrongType
+// curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"aa3"}' localhost:8027/v1/list/element/lll
 func (server *SERVER) removeFromList(c echo.Context) error {
 	key := c.Param("key")
 
@@ -356,6 +409,8 @@ func (server *SERVER) removeFromList(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.IntDTO{Value: v})
 }
 
+// Remove object from dict by key
+// curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k12"}' localhost:8027/v1/dict/element/ddd
 func (server *SERVER) removeFromDict(c echo.Context) error {
 	key := c.Param("key")
 
@@ -372,6 +427,8 @@ func (server *SERVER) removeFromDict(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.BasicDTO{})
 }
 
+// Set TTL (time-to-live) in nanoseconds for object by key
+// curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":5211}' localhost:8027/v1/ttl/iii
 func (server *SERVER) setTTL(c echo.Context) error {
 	key := c.Param("key")
 
