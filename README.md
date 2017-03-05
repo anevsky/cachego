@@ -15,7 +15,7 @@
 - Custom operations(Get i element on list, get value by key from dict, etc)
 - Golang API client
 - Telnet-like/HTTP-like API protocol
-- Eembed or client-server architecture
+- Embed or client-server architecture
 
 ## Optional features
 - auth (Done)
