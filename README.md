@@ -1,5 +1,4 @@
 ## cachego - Redis-like in-memory cache
-with embed or client-server architecture
 
 [![GoDoc](https://godoc.org/github.com/anevsky/cachego?status.svg)](https://godoc.org/github.com/anevsky/cachego)
 [![Report Card](https://goreportcard.com/badge/github.com/anevsky/cachego)](https://goreportcard.com/report/github.com/anevsky/cachego)
@@ -16,6 +15,7 @@ with embed or client-server architecture
 - Custom operations(Get i element on list, get value by key from dict, etc)
 - Golang API client
 - Telnet-like/HTTP-like API protocol
+- Eembed or client-server architecture
 
 ## Optional features
 - auth (Done)
