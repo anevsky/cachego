@@ -115,7 +115,7 @@ func (server *SERVER) stats(c echo.Context) error {
 	return c.JSON(http.StatusOK, util.StatsDTO{Stats: server.cache.Stats()})
 }
 
-// Get value from cache by 'key' param
+// Get value from cache by key
 // Auto type conversion
 // Returns value or ErrorWrongType if not supported value type
 // curl -i -w "\n" --user alex:secret localhost:8027/v1/get/vvv
