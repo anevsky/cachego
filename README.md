@@ -55,11 +55,9 @@ server.StartUp()
 ## cURL examples to server
 
 * Get total number of objects 
-`curl -i -w "\n" --user alex:secret localhost:8027/v1/len`
-* Get list of keys 
-`curl -i -w "\n" --user alex:secret localhost:8027/v1/keys`
-* Get cache stats 
-`curl -i -w "\n" --user alex:secret localhost:8027/v1/stats`
+* * `curl -i -w "\n" --user alex:secret localhost:8027/v1/len`
+* Get list of keys `curl -i -w "\n" --user alex:secret localhost:8027/v1/keys`
+* Get cache stats `curl -i -w "\n" --user alex:secret localhost:8027/v1/stats`
 * Get value from cache by key `curl -i -w "\n" --user alex:secret localhost:8027/v1/get/vvv`
 * Get element from list by index `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":1}' localhost:8027/v1/list/element/lll`
 * Get element from dict by key `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k1"}' localhost:8027/v1/dict/element/ddd`
