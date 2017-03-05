@@ -2,8 +2,6 @@
 ## with embed or client-server architecture
 
 [![GoDoc](https://godoc.org/github.com/anevsky/cachego?status.svg)](https://godoc.org/github.com/anevsky/cachego)
-[![Build Status](https://travis-ci.org/anevsky/cachego.svg?branch=master)](https://travis-ci.org/anevsky/cachego)
-[![Coverage Status](https://coveralls.io/repos/github/anevsky/cachego/badge.svg?branch=master)](https://coveralls.io/github/anevsky/cachego?branch=master)
 [![Report Card](https://goreportcard.com/badge/github.com/anevsky/cachego)](https://goreportcard.com/report/github.com/anevsky/cachego)
 
 ## Features:
