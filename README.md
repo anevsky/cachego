@@ -1,12 +1,12 @@
-# cachego - Redis-like in-memory cache (embed or client-server architecture)
+## cachego - Redis-like in-memory cache
+## with embed or client-server architecture
 
 [![GoDoc](https://godoc.org/github.com/anevsky/cachego?status.svg)](https://godoc.org/github.com/anevsky/cachego)
 [![Build Status](https://travis-ci.org/anevsky/cachego.svg?branch=master)](https://travis-ci.org/anevsky/cachego)
 [![Coverage Status](https://coveralls.io/repos/github/anevsky/cachego/badge.svg?branch=master)](https://coveralls.io/github/anevsky/cachego?branch=master)
-[![Sourcegraph](https://sourcegraph.com/github.com/anevsky/cachego/-/badge.svg)](https://sourcegraph.com/github.com/anevsky/cachego?badge)
 [![Report Card](https://goreportcard.com/badge/github.com/anevsky/cachego)](https://goreportcard.com/report/github.com/anevsky/cachego)
 
-## Desired features:
+## Features:
 - Key-value storage with string, lists, dict support
 - Per-key TTL
 - Operations:
@@ -19,10 +19,10 @@
 - Golang API client
 - Telnet-like/HTTP-like API protocol
 
-## Optional features:
+## Optional features
+- auth (Done)
 - persistence to disk/db (TODO)
 - scaling(on server-side or on client-side) (TODO)
-- auth (Done)
 - perfomance tests (TODO)
 
 ## Run server
@@ -78,7 +78,7 @@ server.StartUp()
 * Remove object from dict by key `curl -i -w "\n" -X DELETE --user alex:secret -H 'Content-Type: application/json' -d '{"value":"k12"}' localhost:8027/v1/dict/element/ddd`
 * Set TTL (time-to-live) in nanoseconds for object by key `curl -i -w "\n" -X POST --user alex:secret -H 'Content-Type: application/json' -d '{"value":5211}' localhost:8027/v1/ttl/iii`
 
-## Client examples
+## Client example
 
 ```Go
 package main
